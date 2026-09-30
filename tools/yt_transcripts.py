@@ -23,7 +23,7 @@ def lista_videouri(url, filtru, limita):
     out = subprocess.run(cmd, capture_output=True, text=True, check=True).stdout
     videouri = [linie.split("\t", 1) for linie in out.splitlines() if "\t" in linie]
     if filtru:
-        videouri = [(i, t) for i, t in videouri if filtru.lower() in t.lower()]
+        videouri = [(i, t) for i, t in videouri if any(f.lower() in t.lower() for f in filtru)]
     return videouri
 
 
@@ -42,7 +42,8 @@ def vtt_la_text(cale):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("url", help="link canal/playlist, ex. https://www.youtube.com/@MonicaIon/videos")
-    p.add_argument("--filtru", help="pastreaza doar titlurile care contin textul (ex. spark)")
+    p.add_argument("--filtru", action="append",
+                   help="pastreaza titlurile care contin textul; se poate repeta (ex. --filtru #210 --filtru #174)")
     p.add_argument("--limita", type=int, help="cate videouri recente sa scaneze")
     p.add_argument("--limba", default="ro", help="cod limba subtitrare (implicit ro)")
     p.add_argument("--iesire", default="transcrieri", help="folder de iesire")
